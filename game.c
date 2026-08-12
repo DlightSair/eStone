@@ -3,7 +3,7 @@
 #include "util.h"
 
 
-int game()
+int game(int gameMode, int isFirstPlayer)
 {
     int isGameRunning = 1;
 
@@ -26,7 +26,7 @@ int game()
             break;
         }
 
-        takeInput(&currentGame);
+        getMove(&currentGame, gameMode, isFirstPlayer);
 
     }
 

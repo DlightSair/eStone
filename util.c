@@ -1,6 +1,16 @@
 #include <stdio.h>
 #include "type.h"
+#include "game.h"
 
+
+void setNextPlayer(gameState *currentGame)
+{
+    if(currentGame->currentPlayer == 1) {
+        currentGame->currentPlayer = 2;
+    }else if(currentGame->currentPlayer == 2){
+        currentGame->currentPlayer = 1;
+    }
+}
 
 void displayBoard(gameState *currentGame)
 {
@@ -26,13 +36,13 @@ void displayBoard(gameState *currentGame)
 
 
 
-void takeInput(gameState *currentGame)
-{
+void takeUserInput(gameState *currentGame){
+
     int row, column;
     int isMoveLegal = 0;
     int isPositioninBoard = 0;
 
-    while(!isMoveLegal && !isPositioninBoard)
+    while(!isMoveLegal || !isPositioninBoard)
     {
         row = 0; column = 0;
         printf("\nPlayer %d Enter Your Move <row> <column>: ", currentGame->currentPlayer);
@@ -56,13 +66,32 @@ void takeInput(gameState *currentGame)
     }
 
     currentGame->board[row-1][column-1] = currentGame->currentPlayer;
-    currentGame->movesPlayed++;
+}
 
-    if(currentGame->currentPlayer == 1) {
-        currentGame->currentPlayer = 2;
-    }else if(currentGame->currentPlayer == 2){
-        currentGame->currentPlayer = 1;
+
+void getMove(gameState *currentGame, int gameMode, int isFirstPlayer)
+{
+
+    int isThisBotTurn=0;
+
+    if(isFirstPlayer){
+        isThisBotTurn = (currentGame->currentPlayer == 1);
+    }else{
+        isThisBotTurn = (currentGame->currentPlayer == 2);
     }
+
+    if(gameMode && isThisBotTurn){
+
+        getBotInput(currentGame, isFirstPlayer);
+
+    }else{
+
+        takeUserInput(currentGame);
+
+    }
+
+    currentGame->movesPlayed++;
+    setNextPlayer(currentGame);
 }
 
 
