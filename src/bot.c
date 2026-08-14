@@ -38,6 +38,8 @@ void getBotInput(gameState *currentGame, int isFirstPlayer)
     }
 
     currentGame->board[max_i][max_j] = currentGame->currentPlayer;
+    currentGame->movesPlayed++;
+    setNextPlayer(currentGame);
 }
 
 

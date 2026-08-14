@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "type.h"
 #include "game.h"
+#include "window.h"
 
 
 void setNextPlayer(gameState *currentGame)
@@ -66,11 +67,13 @@ void takeUserInput(gameState *currentGame){
     }
 
     currentGame->board[row-1][column-1] = currentGame->currentPlayer;
+    currentGame->movesPlayed++;
+    setNextPlayer(currentGame);
 }
 
 
-void getMove(gameState *currentGame, int gameMode, int isFirstPlayer)
-{
+
+int isThisBotTurn(gameState *currentGame, int isFirstPlayer, int gameMode){
 
     int isThisBotTurn=0;
 
@@ -80,19 +83,9 @@ void getMove(gameState *currentGame, int gameMode, int isFirstPlayer)
         isThisBotTurn = (currentGame->currentPlayer == 2);
     }
 
-    if(gameMode && isThisBotTurn){
-
-        getBotInput(currentGame, isFirstPlayer);
-
-    }else{
-
-        takeUserInput(currentGame);
-
-    }
-
-    currentGame->movesPlayed++;
-    setNextPlayer(currentGame);
+    return (gameMode && isThisBotTurn);
 }
+
 
 
 int checkLines(gameState *currentGame, int x)
@@ -117,6 +110,9 @@ int checkLines(gameState *currentGame, int x)
     return 0;
 }
 
+
+
+
 int checkDiagonal(gameState *currentGame, int x)
 {
     int same1 = 1;
@@ -137,27 +133,62 @@ int checkDraw(gameState *currentGame)
     return 0;
 }
 
-int hasGameEnded(gameState *currrentGame)
+
+
+
+
+int hasGameEnded(gameState *currentGame)
 {
-    if( checkLines(currrentGame, 1) || checkDiagonal(currrentGame, 1) ){
+    if( checkLines(currentGame, 1) || checkDiagonal(currentGame, 1) ){
         return 1;
-    }else if( checkLines(currrentGame, 2) || checkDiagonal(currrentGame, 2) ){
+    }else if( checkLines(currentGame, 2) || checkDiagonal(currentGame, 2) ){
         return 2;
-    }else if( checkDraw(currrentGame) ){
+    }else if( checkDraw(currentGame) ){
         return 3;
     }else{
         return 0;
     }
 }
 
-void endScreen(int state)
+
+
+
+void endScreen(SDL_Renderer *renderer, int state, int isGUI)
 {
+    SDL_FRect rect = {
+        .x = 0,
+        .y = 0,
+        .w = WIDTH,
+        .h = HEIGHT
+    };
+
     if(state == 1){
-        printf("\nPlayer 1 has won!");
+
+        if(isGUI){
+            SDL_SetRenderDrawColor(renderer, 231, 76, 60, 80);
+            SDL_RenderFillRect(renderer, &rect);
+        } else {
+            printf("\nPlayer 1 has won!");
+        }
+
     }else if( state == 2 ){
-        printf("\nPlayer 2 has won!");
+
+        if(isGUI){
+            SDL_SetRenderDrawColor(renderer, 52, 152, 219, 80);
+            SDL_RenderFillRect(renderer, &rect);
+        } else {
+            printf("\nPlayer 2 has won!");
+        }
+
     }else if( state == 3){
-        printf("\nDraw!");
+
+        if(isGUI){
+            SDL_SetRenderDrawColor(renderer, 127, 140, 141, 80);
+            SDL_RenderFillRect(renderer, &rect);
+        } else {
+            printf("\nIt's a Draw!");
+        }
+
     }
 
 }
